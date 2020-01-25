@@ -1,5 +1,5 @@
 """
-Created on 2019-12-26
+Created on 2020-01-25
 Creator: khanh.brandy
 
 """
@@ -14,7 +14,49 @@ class Preprocessor:
         pass
 
     def get_data(self, url):
-        data=pd.read_csv(url, header = 0)
+        columns = ['age',
+           'class of worker',
+           'detailed industry recode',
+           'detailed occupation recode',
+           'education',
+           'wage per hour',
+           'enroll in edu inst last wk',
+           'marital status',
+           'major industry code',
+           'major occupation code',
+           'race',
+           'hispanic origin',
+           'sex',
+           'member of a labor union',
+           'reason for unemployment',
+           'full or part time employment stat',
+           'capital gains',
+           'capital losses',
+           'dividends from stocks',
+           'tax filer stat',
+           'region of previous residence',
+           'state of previous residence',
+           'detailed household and family stat',
+           'detailed household summary in household',
+           'instance weight',
+           'migration code-change in msa',
+           'migration code-change in reg',
+           'migration code-move within reg',
+           'live in this house 1 year ago',
+           'migration prev res in sunbelt',
+           'num persons worked for employer',
+           'family members under 18',
+           'country of birth father',
+           'country of birth mother',
+           'country of birth self',
+           'citizenship',
+           'own business or self employed',
+           'fill inc questionnaire for veterans admin',
+           'veterans benefits',
+           'weeks worked in year',
+           'year'
+           ]
+        data=pd.read_csv(url, names = columns, header = 0)
         return data
 
     def data_standardize(self, data, std=False):
