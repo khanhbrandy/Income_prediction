@@ -56,7 +56,7 @@ class Preprocessor:
            'weeks worked in year',
            'year'
            ]
-        data=pd.read_csv(url, names = columns, header = 0)
+        data=pd.read_csv(url, names = columns, na_values='?')
         return data
 
     def data_standardize(self, data, std=False):
