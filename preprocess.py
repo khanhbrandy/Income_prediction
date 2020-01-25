@@ -57,12 +57,11 @@ class Preprocessor:
            'year',
            'class'
            ]
-        data=pd.read_csv(url, names = columns, na_values='?')
+        data=pd.read_csv(url, names = columns, na_values=' ?')
         return data
 
     def data_standardize(self, data, std=False):
         if std:
-            data.set_index('FACEBOOK_ID', inplace=True)
             scaler = preprocessing.StandardScaler()
             data_stded=scaler.fit_transform(data.values)
             df_data_stded=pd.DataFrame(data_stded, index=data.index,columns=data.columns)
@@ -72,16 +71,11 @@ class Preprocessor:
         return df_data_stded
 
     def lbl_encode(self, profile_data):
-        profile_data.set_index('FACEBOOK_ID', inplace=True)
         for f in profile_data.columns: 
-            if f=='AGE_RANGE':
-                profile_data[f]=profile_data[f].map({'<= 21':0,'22':1,'23-27':2,'28-30':3,'31-60':4,'>= 61':5})
+            if profile_data[f].dtype=='O': 
+                lbl = preprocessing.LabelEncoder() 
+                lbl.fit(list(profile_data[f].values)) 
+                profile_data[f] = lbl.fit_transform(list(profile_data[f].values))
             else:
-                if profile_data[f].dtype=='O': 
-                    lbl = preprocessing.LabelEncoder() 
-                    lbl.fit(list(profile_data[f].values)) 
-                    profile_data[f] = lbl.fit_transform(list(profile_data[f].values))
-                else:
-                    profile_data[f]=profile_data[f]
-        profile_data=profile_data.reset_index()
+                profile_data[f]=profile_data[f]
         return profile_data
