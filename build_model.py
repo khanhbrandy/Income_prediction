@@ -13,6 +13,7 @@ import brandy_model
 import joblib
 import warnings
 
+### Income prediction model 
 
 def build_model(data, clf_list, seed):
     model = brandy_model.Model()
