@@ -54,7 +54,8 @@ class Preprocessor:
            'fill inc questionnaire for veterans admin',
            'veterans benefits',
            'weeks worked in year',
-           'year'
+           'year',
+           'class'
            ]
         data=pd.read_csv(url, names = columns, na_values='?')
         return data
