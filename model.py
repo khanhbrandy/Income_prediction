@@ -133,7 +133,7 @@ class Model(Mymetrics):
         roc_auc = self.auc_score(y_test, y_pred)
         precision_scr = self.precision_score(y_test, y_pred)
         recall_scr = self.recall_score(y_test, y_pred)
-        print('Meta Classifier has AUC: {:.2f}% \n'.format(roc_auc*100))
+        print('Meta Classifier has AUC: {:.2f}%. Precision and Recall score: {:.2f} and {:.2f} respectively \n'.format(roc_auc*100, precision_scr, recall_scr))
         print('Done fitting meta classifier. Time taken = {:.1f}(s) \n'.format(time.time()-start))
         return model
 
