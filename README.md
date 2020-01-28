@@ -1,2 +1,2 @@
 # Income_prediction
-A project of predicting income level 
+An example of predicting income level 
