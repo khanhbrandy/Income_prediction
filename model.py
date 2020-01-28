@@ -58,7 +58,7 @@ class Myvisualization(Mymetrics):
         plt.ylabel('True Positive Rate')
         plt.xlabel('False Positive Rate')
         pass
-class Model(Myvisualization):
+class Model(Mymetrics):
     def __init__(self):
         self.clf_0 = xgb.XGBClassifier(
                     subsample= 0.8, 
@@ -95,6 +95,7 @@ class Model(Myvisualization):
                     C=10000, 
                     class_weight='balanced'
                     )
+
         
     def split_data(self, data, seed, re=False):
         X, y = data.iloc[:,1:-1],data.iloc[:,-1]
