@@ -68,6 +68,7 @@ class Preprocessor():
         'class'
         ]
         data=pd.read_csv(url, names = columns, na_values=' ?')
+        data = data.head(1000) # For testing purpose!!!
         for col in data.select_dtypes('O').columns:
             data[col] = data[col].astype('category')
         print('Done getting data. Time taken = {:.1f}(s) \n'.format(time.time()-start))

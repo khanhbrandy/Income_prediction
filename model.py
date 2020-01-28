@@ -11,10 +11,8 @@ from sklearn import metrics
 import xgboost as xgb
 from lightgbm import LGBMClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier, GradientBoostingClassifier, VotingClassifier
-from mlxtend.classifier import StackingClassifier, StackingCVClassifier, EnsembleVoteClassifier
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.externals import joblib
-from imblearn.over_sampling import SMOTE
 import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedKFold
 
@@ -67,7 +65,7 @@ class Model(Mymetrics):
                     reg_lambda= 40, 
                     reg_alpha= 10, 
                     objective= 'binary:logistic', 
-                    n_estimators= 168, 
+                    n_estimators= 512, 
                     min_child_weight= 15, 
                     max_depth= 4, 
                     learning_rate= 0.05, 
@@ -95,23 +93,6 @@ class Model(Mymetrics):
                     C=10000, 
                     class_weight='balanced'
                     )
-
-        
-    def split_data(self, data, seed, re=False):
-        X, y = data.iloc[:,1:-1],data.iloc[:,-1]
-        # Train-Test split
-        test_size = 0.2
-        X_train_o, X_test, y_train_o, y_test = model_selection.train_test_split(X, y, test_size=test_size, random_state=seed)
-        # Resampling
-        if re:
-            resam=SMOTE(random_state=seed)
-            resam.fit(X_train_o, y_train_o)
-            X_train, y_train = resam.fit_resample(X_train_o, y_train_o)
-            X_train = pd.DataFrame(X_train, columns=X_train_o.columns)
-            y_train = pd.Series(y_train)
-        else:
-            X_train, y_train = X_train_o,y_train_o
-        return X, y, X_train, y_train, X_test, y_test
 
     def generate_oof(self, clf, X_trainset, y_trainset, X_testset, n_fold, seed):
         print('Start getting out of fold set for {}...'.format(clf.__class__.__name__))
