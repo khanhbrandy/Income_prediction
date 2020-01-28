@@ -6,18 +6,24 @@ Creator: khanh.brandy
 import pandas as pd
 import numpy as np
 import time
+from copy import copy as make_copy
+from scipy.stats import mode
 from sklearn import model_selection
 from sklearn import preprocessing
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier, ExtraTreeClassifier
+from imblearn.over_sampling import SMOTE
+import re
 
-class Preprocessor:
+class Preprocessor():
     def __init__(self):
         self.impute_etc = ExtraTreeClassifier()
         self.impute_dtc = DecisionTreeClassifier()
         self.impute_rfc = RandomForestClassifier()
 
     def get_data(self, url):
+        print('Start getting data...')
+        start = time.time()
         columns = ['age',
         'class of worker',
         'detailed industry recode',
@@ -64,6 +70,7 @@ class Preprocessor:
         data=pd.read_csv(url, names = columns, na_values=' ?')
         for col in data.select_dtypes('O').columns:
             data[col] = data[col].astype('category')
+        print('Done getting data. Time taken = {:.1f}(s) \n'.format(time.time()-start))
         return data
 
     def get_null(self, data):
@@ -79,12 +86,13 @@ class Preprocessor:
     def ImputeVoteClassifier(self, data, target_name):
         print('*'*100+'\n')
         print('Start imputing missing values for feature: {} \n'.format(target_name))
+        start = time.time()
         # Training set
         print('Generating training set...')
         train_data = data[data[target_name].notnull()].copy()
         train_target = train_data[target_name]
         train_data.drop(columns = [target_name], inplace = True)
-        encoded_train = OnehotEncode(train_data, train_data.select_dtypes('category').columns)
+        encoded_train = self.OnehotEncode(train_data, train_data.select_dtypes('category').columns)
         print('Done generating training set \n')
         # Testing set
         print('Generating testing set...')
@@ -95,17 +103,17 @@ class Preprocessor:
         encoded_test = self.OnehotEncode(test_data, test_data.select_dtypes('category').columns)
         print('Done generating testing set \n')
         # Fit data into base classifiers
-        etc = self.ExtraTreeClassifier()
+        etc = make_copy(self.impute_etc)
         print('Fitting data into {}...'.format(etc.__class__.__name__))
         etc.fit(encoded_train, train_target)
         etc_pred = etc.predict(encoded_test)
 
-        dtc = self.DecisionTreeClassifier()
+        dtc = make_copy(self.impute_dtc)
         print('Fitting data into {}...'.format(dtc.__class__.__name__))
         dtc.fit(encoded_train, train_target)
         dtc_pred = dtc.predict(encoded_test)
 
-        rfc = self.RandomForestClassifier()
+        rfc = make_copy(self.impute_rfc)
         print('Start fitting data into {}...'.format(rfc.__class__.__name__))
         rfc.fit(encoded_train, train_target)
         rfc_pred = rfc.predict(encoded_test)
@@ -115,9 +123,27 @@ class Preprocessor:
         final_pred = np.array([])
         for i in range(0,len(test_target)):
             final_pred = np.append(final_pred, mode([etc_pred[i], dtc_pred[i], rfc_pred[i]])[0])
-        print('Done voting and dump final predictions into feature: {}'.format(target_name))
+        print('Done voting and dump final predictions into feature: {}. Time taken = {:.1f}(s) \n'.format(target_name, time.time()-start))
         print('\n'+'*'*100)
         return final_pred
 
+    def split_data(self, data, seed, re=False):
+        X, y = data.iloc[:,1:-1],data.iloc[:,-1]
+        X = self.OnehotEncode(X, X.select_dtypes('category').columns)
+        regex = re.compile(r"\[|\]|<", re.IGNORECASE)
+        X.columns = [regex.sub("_", col) if any(x in str(col) for x in set(('[', ']', '<'))) else col for col in X.columns.values]
+        # Train-Test split
+        test_size = 0.3
+        X_train_o, X_test, y_train_o, y_test = model_selection.train_test_split(X, y, test_size=test_size, random_state=seed)
+        # Resampling
+        if re:
+            resam=SMOTE(random_state=seed)
+            resam.fit(X_train_o, y_train_o)
+            X_train, y_train = resam.fit_resample(X_train_o, y_train_o)
+            X_train = pd.DataFrame(X_train, columns=X_train_o.columns)
+            y_train = pd.Series(y_train)
+        else:
+            X_train, y_train = X_train_o,y_train_o
+        return X_train, y_train, X_test, y_test
 
 
