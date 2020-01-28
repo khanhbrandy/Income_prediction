@@ -129,8 +129,8 @@ class Model(Mymetrics):
         y_pred = model.predict(X_test)
         # Accuracy
         acc = self.accuracy(y_test, y_pred)
-        fpr, tpr, threshold = self.roc_curve(y_test, model.predict_proba(X_test)[:,1])
-        roc_auc = self.auc_score(fpr, tpr)
+        fpr, tpr, threshold = self.roc_curve(y_test, y_pred)
+        roc_auc = self.auc_score(y_test, y_pred)
         precision_scr = self.precision_score(y_test, y_pred)
         recall_scr = self.recall_score(y_test, y_pred)
         print('Meta Classifier has AUC: {:.2f}% \n'.format(roc_auc*100))

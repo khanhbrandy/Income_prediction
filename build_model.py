@@ -41,7 +41,7 @@ if __name__=='__main__':
     print('*'*100+'\n')
     seed = 1003
     n_fold = 5
-    colab = True
+    colab = False
     if colab:
         import sys
         from google.colab import drive

@@ -13,7 +13,6 @@ from sklearn import preprocessing
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier, ExtraTreeClassifier
 from imblearn.over_sampling import SMOTE
-import re
 
 class Preprocessor():
     def __init__(self):
@@ -129,10 +128,13 @@ class Preprocessor():
         return final_pred
 
     def split_data(self, data, seed, re=False):
-        X, y = data.iloc[:,1:-1],data.iloc[:,-1]
+        lbl = preprocessing.LabelEncoder() 
+        lbl.fit(list(data['class'].values)) 
+        data['class'] = lbl.fit_transform(list(data['class'].values))
+        X, y = data.iloc[:,0:-1],data.iloc[:,-1]
         X = self.OnehotEncode(X, X.select_dtypes('category').columns)
-        regex = re.compile(r"\[|\]|<", re.IGNORECASE)
-        X.columns = [regex.sub("_", col) if any(x in str(col) for x in set(('[', ']', '<'))) else col for col in X.columns.values]
+        print(y.head())
+        X.columns = [col.replace('<','_') for col in X.columns]
         # Train-Test split
         test_size = 0.3
         X_train_o, X_test, y_train_o, y_test = model_selection.train_test_split(X, y, test_size=test_size, random_state=seed)
