@@ -65,7 +65,7 @@ class Model(Mymetrics):
                     reg_lambda= 40, 
                     reg_alpha= 10, 
                     objective= 'binary:logistic', 
-                    n_estimators= 512, 
+                    n_estimators= 200, 
                     min_child_weight= 15, 
                     max_depth= 4, 
                     learning_rate= 0.05, 
@@ -75,14 +75,14 @@ class Model(Mymetrics):
                     verbose=2,
                     random_state=50)
         self.clf_1 = AdaBoostClassifier(
-                    n_estimators= 800, 
+                    n_estimators= 200, 
                     learning_rate= 0.01,
                     random_state=50)
         self.clf_2 = LGBMClassifier(
                     reg_lambda= 20, 
                     reg_alpha= 20, 
                     num_leaves= 10, 
-                    n_estimators= 512, 
+                    n_estimators= 200, 
                     max_depth= 5, 
                     learning_rate= 0.01, 
                     class_weight= 'balanced',
@@ -90,7 +90,7 @@ class Model(Mymetrics):
         self.clf_3 = LogisticRegression(
                     penalty='l2', 
                     solver='liblinear', 
-                    C=10000, 
+                    C=1000, 
                     class_weight='balanced'
                     )
 

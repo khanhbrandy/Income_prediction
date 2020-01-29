@@ -21,7 +21,7 @@ def preprocess_data(url, seed):
     return X_train, y_train, X_test, y_test
 def build_model(X_train, y_train, X_test, y_test, n_fold, seed):
     modeler = model.Model()
-    clf_list = [modeler.clf_0, modeler.clf_2]
+    clf_list = [modeler.clf_0, modeler.clf_1, modeler.clf_2]
     oof_train = []
     oof_test = []
     for clf in clf_list:
