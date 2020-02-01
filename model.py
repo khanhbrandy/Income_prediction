@@ -11,7 +11,7 @@ from sklearn import metrics
 import xgboost as xgb
 from lightgbm import LGBMClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.externals import joblib
 import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedKFold
@@ -92,6 +92,14 @@ class Model(Mymetrics):
                     solver='liblinear', 
                     C=1000, 
                     class_weight='balanced'
+                    )
+        self.clf_4 = RandomForestClassifier(
+                    n_estimators= 200, 
+                    min_samples_split= 20, 
+                    min_samples_leaf= 2, 
+                    max_features= 'auto', 
+                    max_depth= 3, 
+                    class_weight='balanced',
                     )
 
     def generate_oof(self, clf, X_trainset, y_trainset, X_testset, n_fold, seed):
