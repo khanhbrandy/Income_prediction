@@ -21,9 +21,8 @@ class Mymetrics():
     def __init__(self):
         pass
     def accuracy(self, y_test, y_pred):
-        # Accuracy
         acc = metrics.accuracy_score(y_test, y_pred)
-        print('Accuracy: {:.2f}%'.format(acc * 100))
+        # print('Accuracy: {:.2f}%'.format(acc * 100))
         return acc
     def roc_curve(self, y_test, y_pred_proba):
         fpr, tpr, threshold = metrics.roc_curve(y_test, y_pred_proba)
@@ -34,11 +33,11 @@ class Mymetrics():
         return roc_auc
     def precision_score(self, y_test, y_pred):
         precision_scr = metrics.precision_score(y_test, y_pred)
-        print('Precision score is {:.2f}'.format(float(precision_scr)))
+        # print('Precision score is {:.2f}'.format(float(precision_scr)))
         return precision_scr
     def recall_score(self, y_test, y_pred):
         recall_scr = metrics.recall_score(y_test, y_pred)
-        print('Recall score is {:.2f}'.format(float(recall_scr)))
+        # print('Recall score is {:.2f}'.format(float(recall_scr)))
         return recall_scr
 
 class Myvisualization(Mymetrics):
@@ -61,8 +60,8 @@ class Model(Mymetrics):
                     # subsample= 0.8, 
                     # silent= 1, 
                     # seed= 50, 
-                    reg_lambda= 40, 
-                    reg_alpha= 10, 
+                    # reg_lambda= 40, 
+                    # reg_alpha= 10, 
                     # objective= 'binary:logistic', 
                     # n_estimators= 200, 
                     # min_child_weight= 15, 
@@ -80,7 +79,7 @@ class Model(Mymetrics):
                     # random_state=50
                     )
         self.clf_2 = LGBMClassifier(
-                    reg_lambda= 20, 
+                    # reg_lambda= 20, 
                     # reg_alpha= 20, 
                     # num_leaves= 10, 
                     # n_estimators= 200, 
@@ -116,7 +115,9 @@ class Model(Mymetrics):
             y_train, y_test = y_trainset.iloc[train_idx],y_trainset.iloc[test_idx]
             clf.fit(X_train, y_train)
             oof_train[test_idx] = clf.predict_proba(X_test)[:,1]
-            print('Model {} has AUC: {}'.format(clf.__class__.__name__+'_'+str(i), self.auc_score(y_test, clf.predict_proba(X_test)[:,1])))
+            print('Basse classifier {} has AUC = {} and Accuracy = {:.2f}%'.format(clf.__class__.__name__+'_'+str(i), 
+                                                                                    self.auc_score(y_test, clf.predict_proba(X_test)[:,1]), 
+                                                                                    self.accuracy(y_test, clf.predict(X_test))))
             oof_test_skf[i, :] = clf.predict_proba(X_testset)[:,1]
             # joblib.dump(clf, clf.__class__.__name__+'_'+str(i)+'_'+'.pkl')
         oof_test[:] = oof_test_skf.mean(axis=0)
@@ -140,11 +141,13 @@ class Model(Mymetrics):
         y_pred_proba = model.predict_proba(X_test)[:,1]
         # Accuracy
         acc = self.accuracy(y_test, y_pred)
-        fpr, tpr, threshold = self.roc_curve(y_test, y_pred_proba)
         roc_auc = self.auc_score(y_test, y_pred_proba)
         precision_scr = self.precision_score(y_test, y_pred)
         recall_scr = self.recall_score(y_test, y_pred)
-        print('Meta Classifier has AUC: {:.2f}%.\n'.format(roc_auc*100))
+        print('Accuracy: {:.2f}%'.format(acc * 100))
+        print('Meta Classifier AUC: {:.2f}%'.format(roc_auc*100))
+        print('Precision score: {:.2f}'.format(float(precision_scr)))
+        print('Recall score: {:.2f}'.format(float(recall_scr)))
         print('Done fitting meta classifier. Time taken = {:.1f}(s) \n'.format(time.time()-start))
         return model
 
