@@ -122,13 +122,24 @@ class Model(Mymetrics):
             # joblib.dump(clf, clf.__class__.__name__+'_'+str(i)+'_'+'.pkl')
         oof_test[:] = oof_test_skf.mean(axis=0)
         print('Done getting out of fold set for {}. Time taken = {:.1f}(s) \n'.format(clf.__class__.__name__, time.time()-start))
-        oof_train = oof_train.reshape(-1, 1)
-        oof_test = oof_test.reshape(-1, 1)
+        oof_train = oof_train.ravel()
+        oof_test = oof_test.ravel()
         return oof_train, oof_test
 
-    def generate_metadata(self, oof_df ):
-        metadata = pd.concat(oof_df, axis=1)
-        return metadata
+    # def generate_metadata(self, oof_df ):
+    #     metadata = pd.concat(oof_df, axis=1)
+    #     return metadata
+
+    def generate_metadata(self, X_train, y_train, X_test, y_test, clf_list, generate_oof, n_fold, seed):
+        oof_train = {}
+        oof_test = {}
+        for clf in clf_list:
+            clf_oof_train, clf_oof_test = generate_oof(clf, X_train, y_train, X_test, n_fold, seed)
+            oof_train[clf.__class__.__name__] = clf_oof_train
+            oof_test[clf.__class__.__name__] = clf_oof_test
+        meta_train = pd.DataFrame(oof_train)
+        meta_test = pd.DataFrame(oof_test)
+        return meta_train, meta_test
 
     def model_predict(self, model, X_train, y_train, X_test, y_test, seed):
         if 'random_state' in model.get_params().keys():

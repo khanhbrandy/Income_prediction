@@ -22,25 +22,20 @@ def preprocess_data(url, seed):
 def build_model(X_train, y_train, X_test, y_test, n_fold, seed):
     modeler = model.Model()
     clf_list = [modeler.clf_0, modeler.clf_1, modeler.clf_2]
-    oof_train = []
-    oof_test = []
-    for clf in clf_list:
-        clf_oof_train, clf_oof_test = modeler.generate_oof(clf, X_train, y_train, X_test, n_fold, seed)
-        oof_train.append(pd.DataFrame(clf_oof_train))
-        oof_test.append(pd.DataFrame(clf_oof_test))
-    meta_train = modeler.generate_metadata(oof_train)
-    meta_test = modeler.generate_metadata(oof_test)
+    meta_train, meta_test = modeler.generate_metadata(X_train, y_train, X_test, y_test, clf_list, modeler.generate_oof, n_fold, seed)
     # Fit Meta classifier
     meta_clf = modeler.model_predict(modeler.clf_4, meta_train, y_train, meta_test, y_test, seed)
     print('Start dumping Meta classifier...')
     joblib.dump(meta_clf, 'meta_clf.pkl') 
     print('Done dumping Meta classifier ! \n')
-    return meta_clf
+    return meta_clf, meta_train, meta_test
 if __name__=='__main__':
     print('*'*100) 
     print('*'*100+'\n')
     seed = 1003
     n_fold = 5
+    modeler = model.Model()
+    clf_list = [modeler.clf_1, modeler.clf_2]
     colab = False
     if colab:
         import sys
@@ -52,6 +47,6 @@ if __name__=='__main__':
         prefix = ''
     url = prefix+'census/census-income.data'
     X_train, y_train, X_test, y_test = preprocess_data(url, seed)
-    meta_clf = build_model(X_train, y_train, X_test, y_test, n_fold, seed)
+    meta_clf, meta_train, meta_test = build_model(X_train, y_train, X_test, y_test, clf_list, modeler.generate_oof, n_fold, seed)
     
 
