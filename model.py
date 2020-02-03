@@ -25,12 +25,11 @@ class Mymetrics():
         acc = metrics.accuracy_score(y_test, y_pred)
         print('Accuracy: {:.2f}%'.format(acc * 100))
         return acc
-    def roc_curve(self, y_test, y_pred):
-        fpr, tpr, threshold = metrics.roc_curve(y_test, y_pred)
+    def roc_curve(self, y_test, y_pred_proba):
+        fpr, tpr, threshold = metrics.roc_curve(y_test, y_pred_proba)
         return fpr, tpr, threshold
-    def auc_score(self, y_test, y_pred):
-        fpr, tpr, threshold = metrics.roc_curve(y_test, y_pred)
-        roc_auc = metrics.auc(fpr, tpr)
+    def auc_score(self, y_test, y_pred_proba):
+        roc_auc = metrics.roc_auc_score(y_test, y_pred_proba)
         # print('Classifier AUC: {:.2f}%'.format(roc_auc*100))
         return roc_auc
     def precision_score(self, y_test, y_pred):
@@ -45,9 +44,9 @@ class Mymetrics():
 class Myvisualization(Mymetrics):
     def __init__(self):
         pass
-    def roc_auc_viz(self, y_test,y_pred):
-        fpr, tpr, threshold = self.roc_curve(y_test, y_pred)
-        roc_auc = self.auc_score(fpr, tpr)    
+    def roc_auc_viz(self, y_test,y_pred_proba):
+        fpr, tpr, threshold = self.roc_curve(y_test, y_pred_proba)
+        roc_auc = self.auc_score(y_test, y_pred_proba)    
         gini_score=2*roc_auc-1
         plt.title('Receiver Operating Characteristic')
         plt.plot(fpr, tpr, 'b', label = 'AUC = {:.2f} and GINI = {:.2f}'.format(roc_auc,gini_score))
@@ -59,47 +58,50 @@ class Myvisualization(Mymetrics):
 class Model(Mymetrics):
     def __init__(self):
         self.clf_0 = xgb.XGBClassifier(
-                    subsample= 0.8, 
-                    silent= 1, 
-                    seed= 50, 
+                    # subsample= 0.8, 
+                    # silent= 1, 
+                    # seed= 50, 
                     reg_lambda= 40, 
                     reg_alpha= 10, 
-                    objective= 'binary:logistic', 
-                    n_estimators= 200, 
-                    min_child_weight= 15, 
-                    max_depth= 4, 
-                    learning_rate= 0.05, 
-                    gamma= 0.8, 
-                    colsample_bytree= 0.4, 
-                    class_weight= 'd',
-                    verbose=2,
-                    random_state=50)
+                    # objective= 'binary:logistic', 
+                    # n_estimators= 200, 
+                    # min_child_weight= 15, 
+                    # max_depth= 4, 
+                    # learning_rate= 0.05, 
+                    # gamma= 0.8, 
+                    # colsample_bytree= 0.4, 
+                    # class_weight= 'd',
+                    # verbose=2,
+                    # random_state=50
+                    )
         self.clf_1 = AdaBoostClassifier(
-                    n_estimators= 200, 
-                    learning_rate= 0.01,
-                    random_state=50)
+                    # n_estimators= 200, 
+                    # learning_rate= 0.01,
+                    # random_state=50
+                    )
         self.clf_2 = LGBMClassifier(
                     reg_lambda= 20, 
-                    reg_alpha= 20, 
-                    num_leaves= 10, 
-                    n_estimators= 200, 
-                    max_depth= 5, 
-                    learning_rate= 0.01, 
-                    class_weight= 'balanced',
-                    random_state=50)
+                    # reg_alpha= 20, 
+                    # num_leaves= 10, 
+                    # n_estimators= 200, 
+                    # max_depth= 5, 
+                    # learning_rate= 0.01, 
+                    # class_weight= 'balanced',
+                    # random_state=50
+                    )
         self.clf_3 = LogisticRegression(
                     penalty='l2', 
                     solver='liblinear', 
-                    C=1000, 
+                    # C=1000, 
                     class_weight='balanced'
                     )
         self.clf_4 = RandomForestClassifier(
-                    n_estimators= 200, 
-                    min_samples_split= 20, 
-                    min_samples_leaf= 2, 
-                    max_features= 'auto', 
-                    max_depth= 3, 
-                    class_weight='balanced',
+                    # n_estimators= 200, 
+                    # min_samples_split= 20, 
+                    # min_samples_leaf= 2, 
+                    # max_features= 'auto', 
+                    # max_depth= 3, 
+                    # class_weight='balanced',
                     )
 
     def generate_oof(self, clf, X_trainset, y_trainset, X_testset, n_fold, seed):
@@ -135,10 +137,11 @@ class Model(Mymetrics):
         model.fit(X_train, y_train)
         # Get predictions
         y_pred = model.predict(X_test)
+        y_pred_proba = model.predict_proba(X_test)[:,1]
         # Accuracy
         acc = self.accuracy(y_test, y_pred)
-        fpr, tpr, threshold = self.roc_curve(y_test, y_pred)
-        roc_auc = self.auc_score(y_test, y_pred)
+        fpr, tpr, threshold = self.roc_curve(y_test, y_pred_proba)
+        roc_auc = self.auc_score(y_test, y_pred_proba)
         precision_scr = self.precision_score(y_test, y_pred)
         recall_scr = self.recall_score(y_test, y_pred)
         print('Meta Classifier has AUC: {:.2f}%.\n'.format(roc_auc*100))
