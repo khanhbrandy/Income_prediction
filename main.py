@@ -47,6 +47,6 @@ if __name__=='__main__':
         prefix = ''
     url = prefix+'census/census-income.data'
     X_train, y_train, X_test, y_test = preprocess_data(url, seed)
-    meta_clf, meta_train, meta_test = build_model(X_train, y_train, X_test, y_test, clf_list, modeler.generate_oof, n_fold, seed)
+    meta_clf, meta_train, meta_test = build_model(X_train, y_train, X_test, y_test, n_fold, seed)
     
 

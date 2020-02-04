@@ -115,7 +115,7 @@ class Model(Mymetrics):
             y_train, y_test = y_trainset.iloc[train_idx],y_trainset.iloc[test_idx]
             clf.fit(X_train, y_train)
             oof_train[test_idx] = clf.predict_proba(X_test)[:,1]
-            print('Basse classifier {} has AUC = {} and Accuracy = {:.2f}%'.format(clf.__class__.__name__+'_'+str(i), 
+            print('Base classifier {} has AUC = {} and Accuracy = {:.2f}%'.format(clf.__class__.__name__+'_'+str(i), 
                                                                                     self.auc_score(y_test, clf.predict_proba(X_test)[:,1]), 
                                                                                     self.accuracy(y_test, clf.predict(X_test))))
             oof_test_skf[i, :] = clf.predict_proba(X_testset)[:,1]
