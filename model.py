@@ -57,50 +57,47 @@ class Myvisualization(Mymetrics):
 class Model(Mymetrics):
     def __init__(self):
         self.clf_0 = xgb.XGBClassifier(
-                    # subsample= 0.8, 
-                    # silent= 1, 
-                    # seed= 50, 
-                    # reg_lambda= 40, 
-                    # reg_alpha= 10, 
-                    # objective= 'binary:logistic', 
-                    # n_estimators= 200, 
-                    # min_child_weight= 15, 
-                    # max_depth= 4, 
-                    # learning_rate= 0.05, 
-                    # gamma= 0.8, 
-                    # colsample_bytree= 0.4, 
-                    # class_weight= 'd',
-                    # verbose=2,
-                    # random_state=50
+                    subsample= 0.8, 
+                    silent= 1, 
+                    seed= 50, 
+                    reg_lambda= 40, 
+                    reg_alpha= 10, 
+                    objective= 'binary:logistic', 
+                    n_estimators= 200, 
+                    min_child_weight= 10, 
+                    max_depth= 3, 
+                    learning_rate= 0.05, 
+                    gamma= 0.8, 
+                    colsample_bytree= 0.4, 
+                    class_weight= 'd',
+                    verbose=2,
                     )
         self.clf_1 = AdaBoostClassifier(
-                    # n_estimators= 200, 
-                    # learning_rate= 0.01,
-                    # random_state=50
+                    n_estimators= 200, 
+                    learning_rate= 0.05,
                     )
         self.clf_2 = LGBMClassifier(
-                    # reg_lambda= 20, 
-                    # reg_alpha= 20, 
-                    # num_leaves= 10, 
-                    # n_estimators= 200, 
-                    # max_depth= 5, 
-                    # learning_rate= 0.01, 
-                    # class_weight= 'balanced',
-                    # random_state=50
+                    reg_lambda= 20, 
+                    reg_alpha= 20, 
+                    num_leaves= 10, 
+                    n_estimators= 200, 
+                    max_depth= 3, 
+                    learning_rate= 0.05, 
+                    class_weight= 'balanced',
                     )
         self.clf_3 = LogisticRegression(
                     penalty='l2', 
                     solver='liblinear', 
-                    # C=1000, 
+                    C=1000, 
                     class_weight='balanced'
                     )
         self.clf_4 = RandomForestClassifier(
-                    # n_estimators= 200, 
-                    # min_samples_split= 20, 
-                    # min_samples_leaf= 2, 
-                    # max_features= 'auto', 
-                    # max_depth= 3, 
-                    # class_weight='balanced',
+                    n_estimators= 200, 
+                    min_samples_split= 5, 
+                    min_samples_leaf= 2, 
+                    max_features= 'auto', 
+                    max_depth= 3, 
+                    class_weight='balanced',
                     )
 
     def generate_oof(self, clf, X_trainset, y_trainset, X_testset, n_fold, seed):
