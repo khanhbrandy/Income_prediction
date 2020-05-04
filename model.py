@@ -8,7 +8,6 @@ import numpy as np
 import time
 from sklearn import model_selection
 from sklearn import metrics
-import xgboost as xgb
 from lightgbm import LGBMClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
