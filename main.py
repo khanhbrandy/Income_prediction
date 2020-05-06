@@ -23,7 +23,7 @@ def build_model(X_train, y_train, X_test, y_test, n_fold, seed):
     clf_list = [modeler.clf_0, modeler.clf_1, modeler.clf_2]
     meta_train, meta_test = modeler.generate_metadata(X_train, y_train, X_test, y_test, clf_list, modeler.generate_oof, n_fold, seed)
     # Fit Meta classifier
-    meta_clf = modeler.model_predict(modeler.clf_4, meta_train, y_train, meta_test, y_test, seed)
+    meta_clf = modeler.model_predict(modeler.clf_3, meta_train, y_train, meta_test, y_test, seed)
     print('Start dumping Meta classifier...')
     joblib.dump(meta_clf, 'meta_clf.pkl') 
     print('Done dumping Meta classifier ! \n')
